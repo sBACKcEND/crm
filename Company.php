@@ -10,6 +10,8 @@ class Company
     public $phone;
     public $email;
 
+    private $customers;
+
     /**
      * @param $id
      * @param $name
@@ -30,7 +32,12 @@ class Company
         $this->id = $id;
     }
 
-    public function save(){
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function update(){
         $pdo=DB::getPDO();
         $stm=$pdo->prepare("UPDATE companys SET name=?, address=?, vat_code=?, company_name=?, phone=?, email=? WHERE id=?");
         $stm->execute([$this->name, $this->address, $this->vat_code, $this->company_name, $this->phone, $this->email, $this->id ]);
@@ -40,6 +47,12 @@ class Company
         $pdo=DB::getPDO();
         $stm=$pdo->prepare("DELETE FROM companys WHERE id=?");
         $stm->execute([ $this->id ]);
+    }
+
+    public function create(){
+        $pdo=DB::getPDO();
+        $stm=$pdo->prepare("INSERT INTO companys (name, address, vat_code, company_name, phone, email) VALUES (?,?,?,?,?,?)");
+        $stm->execute([ $this->name, $this->address, $this->vat_code, $this->company_name, $this->phone, $this->email ]);
     }
 
 
@@ -60,6 +73,13 @@ class Company
             $companys[]=new Company($c['name'],$c['address'],$c['vat_code'],$c['company_name'],$c['phone'],$c['email'],$c['id']);
         }
         return $companys;
+    }
+
+    public function getCustomers() {
+        if ($this->customers==null){
+            $this->customers= Customer::getCustomers();
+        }
+        return  $this->customers;
     }
 
 
